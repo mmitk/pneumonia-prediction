@@ -1,6 +1,13 @@
 from keras.preprocessing.image import ImageDataGenerator, load_img
 import keras
 import tensorflow as tf
+import os
+import time
+from pathlib import Path
+import datetime
+
+ROOT_DIR = Path(os.path.dirname(os.path.abspath(__file__))).parent # point to common folder
+LOGS_DIR = Path(ROOT_DIR / "logs")
 
 def create_train_datagen():
     return ImageDataGenerator(rescale = 1./255, shear_range = 0.2, zoom_range = 0.2, horizontal_flip = True)
@@ -10,6 +17,22 @@ def create_test_datagen():
 
 def create_generator_set(datagen, path):
     return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 32, class_mode = 'binary')
+    #/*+return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 1, class_mode = 'binary')
+
+def log(event, msg, priority):
+    filename = str(datetime.date.today()) + '.log'
+    path = Path(LOGS_DIR / filename)
+    output = str(time.strftime("%H:%M:%S:")) + '{}[{}] -> {}\n'.format(str(event), priority, msg)
+    try:
+        with open(path, 'a') as f:
+            f.write(output)
+    except Exception:
+        with open(path, 'w+') as f:
+            f.write(output)
+
+
+class ModelException(Exception):
+    pass
 
 # Balanced Accuracy Utility Class
 class BalancedSparseCategoricalAccuracy(keras.metrics.SparseCategoricalAccuracy):
@@ -26,3 +49,4 @@ class BalancedSparseCategoricalAccuracy(keras.metrics.SparseCategoricalAccuracy)
         cls_counts = tf.math.reciprocal_no_nan(tf.cast(cls_counts, self.dtype))
         weight = tf.gather(cls_counts, y_true_int)
         return super().update_state(y_true, y_pred, sample_weight=weight)
+

@@ -10,6 +10,12 @@ PATH_TO_DIR = r'C:\Users\mmitk\dev\2020\pneumonia\common\data\resampled'
 
 def resample_directory(resampler, dir_path, new_dir_name, val = False):
 
+    #/*+ TEMP UNTIL BETTER SOLUTION
+    res_dir = r'C:/Users/mmitk/dev/2020/pneumonia/common/data/resampled/{}'.format(new_dir_name)
+    if os.path.isdir(res_dir) and len(os.listdir(res_dir)) != 0:
+        return
+
+
     images_arr, targets = to_numpy_array(dir_path)
     images1 = images_arr.reshape(-1,1)
     targets1 = targets.reshape(-1,1)

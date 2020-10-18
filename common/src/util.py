@@ -16,8 +16,10 @@ def create_test_datagen():
     return ImageDataGenerator(rescale = 1./255)
 
 def create_generator_set(datagen, path):
-    return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 32, class_mode = 'binary')
-    #/*+return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 1, class_mode = 'binary')
+    #return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 32, class_mode = 'binary')
+    return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 32, class_mode = 'categorical')
+
+
 
 def log(event, msg, priority):
     filename = str(datetime.date.today()) + '.log'

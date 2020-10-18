@@ -26,11 +26,12 @@ METRICS = [
         ]
 
 class CNNModel:        
-        def __init__(self):
+        def __init__(self, early_stopping = False):
             self.early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta = 0.1, patience=10)
             self.model = None
             self.curr_accuracy = None
             self.history = None
+            self.early_stopping = early_stopping
 
         def summary(self):
             self.model.summary
@@ -55,15 +56,20 @@ class CNNModel:
 
             # Fully Connected Layers
             cnn.add(Dense(activation = 'relu', units = 128))
-            cnn.add(Dense(activation = 'sigmoid', units = 1))
+            #/*+cnn.add(Dense(activation = 'sigmoid', units = 1))
+            cnn.add(Dense(activation = 'sigmoid', units = 2))
 
             # Compile the Neural network
             cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = metrics)
+            #/*+cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
             self.model = cnn
 
 
         def fit_generator(self, generator, validation_generator, epochs=50, steps_per_epoch=163):
-            self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624, callbacks=[self.early_stop])
+            if self.early_stopping:
+                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624, callbacks=[self.early_stop])
+            else:
+                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624)
             #/*+self.history = self.model.fit_generator(generator, steps_per_epoch = 624 // 32, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, callbacks=[self.early_stop])
             return self.history
             
@@ -114,6 +120,8 @@ class CNNModel:
             #print('test_set:{}'.format(test_set.classes.shape))
             #print('test_set:{}'.format(test_set.classes.shape))
             """
+            
+
             test_steps_per_epoch = np.math.ceil(test_data_generator.samples / test_data_generator.batch_size)
             predictions = self.model.predict_generator(test_data_generator, steps=test_steps_per_epoch)
             y_pred = np.argmax(predictions, axis=1)

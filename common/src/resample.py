@@ -49,7 +49,8 @@ def to_numpy_array(directory_path):
         list_targets.append(1)
 
 
-    return np.asarray(list_images), np.asarray(list_targets)
+    #return np.asarray(list_images), np.asarray(list_targets)
+    return np.asarray(list_images, dtype=np.ndarray), np.asarray(list_targets)
 
 
 def write_to_directory(dir_name, images, targets, val):

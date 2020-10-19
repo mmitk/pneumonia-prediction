@@ -75,13 +75,14 @@ class CNNModel:
             
         def evaluate_model(self, test_generator=None, test_directory=None, test_set = None):
             if test_set == None:
-                test_set = test_generator.flow_from_directory(test_directory, target_size = (64, 64), batch_size = 32, class_mode = 'binary')
+                test_set = test_generator.flow_from_directory(test_directory, target_size = (64, 64), batch_size = 32, class_mode = 'categorical')
             self.curr_accuracy = self.model.evaluate_generator(test_set, steps = 624)
             return self.curr_accuracy
 
         def predict_generator(self, test_generator=None, test_directory=None, test_set=None):
-            if test_set == None:
-                test_set = test_generator.flow_from_directory(test_directory, target_size = (64, 64), batch_size = 32, class_mode = 'binary')
+            #if test_set == None:
+                #test_set = test_generator.flow_from_directory(test_directory, target_size = (64, 64), batch_size = 32, class_mode = 'binary')
+            test_set = test_generator.flow_from_directory(test_directory, target_size = (64, 64), batch_size = 32, class_mode = 'categorical')
  
             filenames = test_set.filenames
             nb_samples = len(filenames)

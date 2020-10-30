@@ -1,0 +1,15 @@
+13:49:43:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\NORMAL'[LOW] -> In resamply.py, line 75
+13:49:43:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\PNEUMONIA'[LOW] -> In resamply.py, line 75
+13:49:43:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\PNEUMONIA'[LOW] -> In resamply.py, line 75
+13:49:43:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\NORMAL'[LOW] -> In resamply.py, line 75
+13:49:44:RandomOverSampler(random_state=0)[MEDIUM] -> resampled C:\Users\mmitk\dev\2020\pneumonia\common\data\TEST to TEST_ROS
+17:55:46:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\NORMAL'[LOW] -> In resamply.py, line 75
+17:55:46:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\PNEUMONIA'[LOW] -> In resamply.py, line 75
+17:55:46:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\PNEUMONIA'[LOW] -> In resamply.py, line 75
+17:55:46:[WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\mmitk\\dev\\2020\\pneumonia\\common\\data\\resampled\\TEST_ROS\\train\\NORMAL'[LOW] -> In resamply.py, line 75
+17:55:46:RandomOverSampler(random_state=0)[MEDIUM] -> resampled C:\Users\mmitk\dev\2020\pneumonia\common\data\TEST to TEST_ROS
+18:40:53:name 'path' is not defined[LOW] -> In resamply.py, line 50
+18:40:53:name 'path' is not defined[LOW] -> In resamply.py, line 61
+18:41:27:name 'path' is not defined[LOW] -> In resamply.py, line 50
+18:41:27:name 'path' is not defined[LOW] -> In resamply.py, line 61
+18:41:27:name 'wpath' is not defined[LOW] -> In resamply.py, line 75

@@ -17,10 +17,11 @@ def resample_directory(resampler, dir_path, new_dir_name, val = False):
 
 
     images_arr, targets = to_numpy_array(dir_path)
-    images1 = images_arr.reshape(-1,1)
+    images_arr = images_arr.reshape(images_arr.shape[0],images_arr.shape[1]*images_arr.shape[2]*images_arr.shape[3])
     targets1 = targets.reshape(-1,1)
-    X_res, y_res = resampler.fit_resample(images1, targets1)
-    X_res = X_res.reshape(1,-1)
+    X_res, y_res = resampler.fit_resample(images_arr, targets1)
+    #X_res = X_res.reshape(1,-1)
+    X_res = X_res.reshape(X_res.shape[0],64,64,3)
     y_res = y_res.reshape(1, -1)
     write_to_directory(new_dir_name, X_res, y_res, val)
     log(str(resampler), 'resampled {} to {}'.format(dir_path, new_dir_name), 'MEDIUM')
@@ -39,18 +40,24 @@ def to_numpy_array(directory_path):
     for image in os.listdir(norm_path):
         image = os.path.join(norm_path, image)
         tmp_im = cv2.imread(image)
+        #/*+list_images.append(tmp_im)
+        #list_images.append(np.asarray(tmp_im,dtype=int))
+        tmp_im = cv2.resize(tmp_im, (64, 64), interpolation=cv2.INTER_CUBIC)
         list_images.append(tmp_im)
         list_targets.append(0)
 
     for image in os.listdir(pneum_path):
         image = os.path.join(pneum_path, image)
         tmp_im = cv2.imread(image)
+        tmp_im = cv2.resize(tmp_im,(64,64), interpolation=cv2.INTER_CUBIC)
         list_images.append(tmp_im)
+        #list_images.append(np.asarray(tmp_im, dtype=int))
         list_targets.append(1)
 
 
-    #return np.asarray(list_images), np.asarray(list_targets)
-    return np.asarray(list_images, dtype=np.ndarray), np.asarray(list_targets)
+    #return list_images, np.asarray(list_targets)
+    return np.asarray(list_images), np.asarray(list_targets)
+    #return np.asaarray(list_images, dtype=np.ndarray), np.asanyarray(list_targets)
 
 
 def write_to_directory(dir_name, images, targets, val):
@@ -71,22 +78,20 @@ def write_to_directory(dir_name, images, targets, val):
     except Exception as e:
         log(e, 'In resamply.py, line 61', 'LOW')
 
-    for img in images:
-        if img is None:
-            continue
-        for count, im in enumerate(img):
-            if targets[0][count] == 0: #*+
-                sub_dir = r'NORMAL'
-            else:
-                sub_dir = r'PNEUMONIA'
-            wpath = os.path.join(t_v_path, sub_dir)
-            try:
-                os.mkdir(wpath)
-            except Exception as e:
-                log(e, 'In resamply.py, line 75', 'LOW')
-            im_name = 'im{}.jpeg'.format(count)
-            im_path = r'C:/Users/mmitk/dev/2020/pneumonia/common/data/resampled/{}/{}/{}/{}'.format(dir_name, train_val_dir,sub_dir,im_name)
-            cv2.imwrite(im_path, im)
+    for count, img in enumerate(images):
+        if targets[0][count] == 0:  # *+
+            sub_dir = r'NORMAL'
+        else:
+            sub_dir = r'PNEUMONIA'
+        wpath = os.path.join(t_v_path, sub_dir)
+        try:
+            os.mkdir(wpath)
+        except Exception as e:
+            log(e, 'In resamply.py, line 75', 'LOW')
+        im_name = 'im{}.jpeg'.format(count)
+        im_path = r'C:/Users/mmitk/dev/2020/pneumonia/common/data/resampled/{}/{}/{}/{}'.format(dir_name, train_val_dir,
+                                                                                                sub_dir, im_name)
+        cv2.imwrite(im_path, img)
 
 def remove_resampled_directory(path):
     shutil.rmtree(path)

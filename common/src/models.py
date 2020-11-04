@@ -10,9 +10,12 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import balanced_accuracy_score
 import matplotlib.pyplot as plt
 import sklearn
+import time
 import seaborn as sns
 import numpy as np
 from . import util
+import json
+import pickle
 
 METRICS = [
             keras.metrics.TruePositives(name='tp'),
@@ -25,13 +28,25 @@ METRICS = [
             keras.metrics.AUC(name='auc'),
         ]
 
+
+
+
 class CNNModel:        
-        def __init__(self, early_stopping = False):
-            self.early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta = 0.1, patience=10)
-            self.model = None
+        def __init__(self, early_stopping = False, model = None, ):
+            self.model = model
             self.curr_accuracy = None
             self.history = None
-            self.early_stopping = early_stopping
+            # Create callback to restore most
+            # accurate weights after training
+            self.early_stopping = keras.callbacks.EarlyStopping(
+                monitor='val_loss',
+                min_delta=0,
+                patience=0,
+                verbose=0,
+                mode='auto',
+                baseline=None,
+                restore_best_weights=True
+                )
 
         def summary(self):
             self.model.summary
@@ -65,12 +80,12 @@ class CNNModel:
             self.model = cnn
 
 
-        def fit_generator(self, generator, validation_generator, epochs=50, steps_per_epoch=163):
-            if self.early_stopping:
-                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624, callbacks=[self.early_stop])
-            else:
-                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624)
+        def fit_generator(self, generator, validation_generator, checkpoint_path, epochs=50, steps_per_epoch=163):
+
+            self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624, callbacks=[keras.callbacks.ModelCheckpoint(checkpoint_path, save_best_only=True, monitor='val_loss', mode='min'),self.early_stopping])
             #/*+self.history = self.model.fit_generator(generator, steps_per_epoch = 624 // 32, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, callbacks=[self.early_stop])
+           # end = time.time()
+            #print('\nFinished [TRAINING MODEL\{FIT GENERATOR\}]--------->Execution Time: {}'.format(str(end-start)))
             return self.history
             
         def evaluate_model(self, test_generator=None, test_directory=None, test_set = None):
@@ -149,3 +164,44 @@ class CNNModel:
             true_classes = test_data_generator.classes
             class_labels = list(test_data_generator.class_indices.keys())
             print(sklearn.metrics.classification_report(true_classes, y_pred, target_names=class_labels))
+
+        def save_model(self, arch_dst, weights_dst, hst_dst):
+            # save model architecture
+            model_json = self.model.to_json()
+            with open(arch_dst,'w') as js:
+                js.write(model_json)
+            
+            # save weights
+            self.model.save_weights(weights_dst)
+
+            # save history information
+            with open(hst_dst, 'wb') as pkf:
+                pickle.dump(self.history, pkf)
+        
+        def from_json(self, arch_src, weights_src, hst_src):
+            try:
+            # load architecture
+                with open(arch_src,'r') as js:
+                    loaded_model = js.read()
+                    self.model = keras.models.model_from_json(loaded_model)
+            except Exception as e:
+                self.model = None
+                raise e
+
+            try:
+                # load history
+                with open(hst_src, 'rb') as pkf:
+                    self.history = pickle.load(pkf)
+            except Exception as e:
+                self.history = None
+                raise e
+
+            # load weights
+            try:
+                self.model.load_weights(weights_src)
+            except Exception as e:
+                self.model= None
+                raise e
+
+            
+            

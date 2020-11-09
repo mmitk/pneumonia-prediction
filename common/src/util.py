@@ -15,9 +15,9 @@ def create_train_datagen():
 def create_test_datagen():
     return ImageDataGenerator(rescale = 1./255)
 
-def create_generator_set(datagen, path):
+def create_generator_set(datagen, path, batch_size = 32, shuffle = True):
     #return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 32, class_mode = 'binary')
-    return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 32, class_mode = 'categorical')
+    return datagen.flow_from_directory(path, target_size = (64, 64), batch_size = 32, class_mode = 'categorical', shuffle = shuffle)
 
 
 

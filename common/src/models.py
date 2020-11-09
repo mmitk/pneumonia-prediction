@@ -32,16 +32,16 @@ METRICS = [
 
 
 class CNNModel:        
-        def __init__(self, early_stopping = False, model = None, ):
+        def __init__(self, early_stopping = False, model = None, patience_s=50):
             self.model = model
             self.curr_accuracy = None
             self.history = None
             # Create callback to restore most
             # accurate weights after training
             self.early_stopping = keras.callbacks.EarlyStopping(
-                monitor='val_loss',
-                min_delta=0,
-                patience=0,
+                monitor='val_accuracy',
+                min_delta=5,
+                patience=patience_s,
                 verbose=0,
                 mode='auto',
                 baseline=None,
@@ -80,12 +80,12 @@ class CNNModel:
             self.model = cnn
 
 
-        def fit_generator(self, generator, validation_generator, checkpoint_path, epochs=50, steps_per_epoch=163):
+        def fit_generator(self, generator, validation_generator, epochs=50, steps_per_epoch=163, class_weights = None):
 
-            self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624, callbacks=[keras.callbacks.ModelCheckpoint(checkpoint_path, save_best_only=True, monitor='val_loss', mode='min'),self.early_stopping])
-            #/*+self.history = self.model.fit_generator(generator, steps_per_epoch = 624 // 32, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, callbacks=[self.early_stop])
-           # end = time.time()
-            #print('\nFinished [TRAINING MODEL\{FIT GENERATOR\}]--------->Execution Time: {}'.format(str(end-start)))
+            if class_weights is None:
+                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, callbacks=[self.early_stopping])
+            else:
+                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, callbacks=[self.early_stopping], class_weight = class_weights)
             return self.history
             
         def evaluate_model(self, test_generator=None, test_directory=None, test_set = None):

@@ -1,0 +1,20 @@
+[]retrain models with new implementation (20 epochs)
+    [x]Baseline
+    [x]ADASYN
+    [x]ClusterCentroids
+    []CondensedNN
+    [x]ENN
+    [x]ROS
+    [x]SMOTE
+
+[]train models with new resampling techniques
+    []...
+
+[]train models at 50 epochs
+    []Baseline
+    []ADASYN
+    []ClusterCentroids
+    []CondensedNN
+    []ENN
+    []ROS
+    []SMOTE

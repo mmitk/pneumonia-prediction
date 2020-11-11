@@ -1,20 +1,50 @@
-[]retrain models with new implementation (20 epochs)
+[]train models with new implementation (20 epochs)
     [x]Baseline
-    [x]ADASYN
-    [x]ClusterCentroids
-    []CondensedNN
-    [x]ENN
-    [x]ROS
-    [x]SMOTE
+
+    [x]OVERSAMPLING
+        [x]ADASYN
+        [x]BorderlineSMOTE
+        [x]KMeansSMOTE
+        [x]KMeansSMOTE
+        [x]ROS
+        [x]SMOTE
+        [x]SVMSMOTE
+    []OVERSAMPLING
+        [x]ClusterCentroids
+        [x]ENN
+        []RENN
+        [x]AllKNN
+        [x]InstanceHardnessThreshold
+        []NearMiss
+        []NeighborhoodCleaningRule
+        []OneSidedSelection
+        []RUS
+        []TomekLinks
+    
 
 []train models with new resampling techniques
     []...
 
 []train models at 50 epochs
-    []Baseline
-    []ADASYN
-    []ClusterCentroids
-    []CondensedNN
-    []ENN
-    []ROS
-    []SMOTE
+     []Baseline
+     []sklearn class weights
+    
+    []OVERSAMPLING
+        []ADASYN
+        []BorderlineSMOTE
+        []KMeansSMOTE
+        []KMeansSMOTE
+        []ROS
+        []SMOTE
+        []SVMSMOTE
+    []OVERSAMPLING
+        []ClusterCentroids
+        []ENN
+        []RENN
+        []AllKNN
+        []InstanceHardnessThreshold
+        []NearMiss
+        []NeighborhoodCleaningRule
+        []OneSidedSelection
+        []RUS
+        []TomekLinks

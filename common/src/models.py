@@ -129,32 +129,24 @@ class CNNModel:
                 plt.legend()
 
         def display_confusion_matrix(self,test_data_generator):
-            """
-            Y_pred = self.predict_generator(test_set=test_set)
-            y_pred = np.argmax(Y_pred, axis=1)
-            #print('Y_pred: {}\n '.format(Y_pred.shape))
-            #print('test_set:{}'.format(test_set.classes.shape))
-            #print('test_set:{}'.format(test_set.classes.shape))
-            """
-            
+            from sklearn.metrics import accuracy_score
 
             test_steps_per_epoch = np.math.ceil(test_data_generator.samples / test_data_generator.batch_size)
             predictions = self.model.predict_generator(test_data_generator, steps=test_steps_per_epoch)
             y_pred = np.argmax(predictions, axis=1)
             true_classes = test_data_generator.classes
             class_labels = list(test_data_generator.class_indices.keys())
-            #print(sklearn.metrics.classification_report(true_classes, y_pred, target_names=class_labels))
+
 
             b_score = balanced_accuracy_score(true_classes, y_pred)
-
-            cm = confusion_matrix(test_data_generator.classes, y_pred)
-            #/*+cm = confusion_matrix(validation_generator.classes, y_pred)
+            a_score = accuracy_score(true_classes, y_pred)
+            cm = confusion_matrix(true_classes, y_pred)
 
             plt.figure(figsize=(9,9))
             sns.heatmap(cm, annot=True, fmt=".3f", linewidths=.5, square = True, cmap = 'Blues_r');
             plt.ylabel('Actual label');
             plt.xlabel('Predicted label');
-            all_sample_title = 'Balanced Accuracy Score: {0}'.format(b_score)
+            all_sample_title = 'Balanced Accuracy: {0}\n Accuracy: {0}'.format(b_score,a_score)
             plt.title(all_sample_title, size = 15);
             
         def get_classification_report(self, test_data_generator):
@@ -164,6 +156,7 @@ class CNNModel:
             true_classes = test_data_generator.classes
             class_labels = list(test_data_generator.class_indices.keys())
             print(sklearn.metrics.classification_report(true_classes, y_pred, target_names=class_labels))
+
 
         def save_model(self, arch_dst, weights_dst, hst_dst):
             # save model architecture

@@ -32,21 +32,22 @@ METRICS = [
 
 
 class CNNModel:        
-        def __init__(self, early_stopping = False, model = None, patience_s=50):
+        def __init__(self, early_stopping = False, model = None):
             self.model = model
             self.curr_accuracy = None
             self.history = None
             # Create callback to restore most
             # accurate weights after training
-            self.early_stopping = keras.callbacks.EarlyStopping(
-                monitor='val_accuracy',
-                min_delta=5,
-                patience=patience_s,
-                verbose=0,
-                mode='auto',
-                baseline=None,
-                restore_best_weights=True
-                )
+            #/*+
+            #/*+self.early_stopping = keras.callbacks.EarlyStopping(
+                #/*+monitor='val_accuracy',
+                #/*+min_delta=0.1,
+                #/*+patience=patience_s,
+                #/*+verbose=0,
+                #/*+mode='auto',
+                #/*+baseline=None,
+                #/*+restore_best_weights=True
+                #/*+)
 
         def summary(self):
             self.model.summary
@@ -59,12 +60,17 @@ class CNNModel:
 
             #Pooling
             cnn.add(MaxPooling2D(pool_size = (2, 2)))
+            #Dropout
+            cnn.add(keras.layers.Dropout(0.50))
 
             # 2nd Convolution
             cnn.add(Conv2D(32, (3, 3), activation="relu"))
 
             # 2nd Pooling layer
             cnn.add(MaxPooling2D(pool_size = (2, 2)))
+
+            #Dropout
+            cnn.add(keras.layers.Dropout(0.50))
 
             # Flatten the layer
             cnn.add(Flatten())
@@ -83,9 +89,9 @@ class CNNModel:
         def fit_generator(self, generator, validation_generator, epochs=50, steps_per_epoch=163, class_weights = None):
 
             if class_weights is None:
-                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, callbacks=[self.early_stopping])
+                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32)
             else:
-                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, callbacks=[self.early_stopping], class_weight = class_weights)
+                self.history = self.model.fit_generator(generator, steps_per_epoch = steps_per_epoch, epochs = epochs, validation_data = validation_generator, validation_steps = 624 // 32, class_weight = class_weights)
             return self.history
             
         def evaluate_model(self, test_generator=None, test_directory=None, test_set = None):

@@ -16,6 +16,7 @@ import numpy as np
 from . import util
 import json
 import pickle
+from keras.regularizers import l1, l2
 
 METRICS = [
             keras.metrics.TruePositives(name='tp'),
@@ -52,19 +53,29 @@ class CNNModel:
         def summary(self):
             self.model.summary
 
-        def create_model(self, metrics = METRICS):            
+        def create_model(self, metrics = METRICS, do_regularization=None):            
             cnn = Sequential()
 
-            #Convolution
-            cnn.add(Conv2D(32, (3, 3), activation="relu", input_shape=(64, 64, 3)))
+            if do_regularization:
+                cnn.add(Conv2D(32, (3, 3), activation="relu", input_shape=(64, 64, 3),kernel_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+            elif do_regularization == 'L1':
+                cnn.add(Conv2D(32, (3, 3), activation="relu", input_shape=(64, 64, 3),kernel_regularizer=l2(0.01), bias_regularizer=l1(0.01)))
+            else:
+                #Convolution
+                cnn.add(Conv2D(32, (3, 3), activation="relu", input_shape=(64, 64, 3)))
 
             #Pooling
             cnn.add(MaxPooling2D(pool_size = (2, 2)))
             #Dropout
             cnn.add(keras.layers.Dropout(0.50))
 
-            # 2nd Convolution
-            cnn.add(Conv2D(32, (3, 3), activation="relu"))
+            if do_regularization == 'L2':
+                cnn.add(Conv2D(32, (3, 3), activation="relu",kernel_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+            elif do_regularization == 'L1':
+                cnn.add(Conv2D(32, (3, 3), activation="relu",kernel_regularizer=l2(0.01), bias_regularizer=l1(0.01)))
+            else:
+                # 2nd Convolution
+                cnn.add(Conv2D(32, (3, 3), activation="relu"))
 
             # 2nd Pooling layer
             cnn.add(MaxPooling2D(pool_size = (2, 2)))
@@ -75,9 +86,14 @@ class CNNModel:
             # Flatten the layer
             cnn.add(Flatten())
 
-            # Fully Connected Layers
-            cnn.add(Dense(activation = 'relu', units = 128))
-            #/*+cnn.add(Dense(activation = 'sigmoid', units = 1))
+            if do_regularization:
+                cnn.add(Dense(activation = 'relu', units = 128,kernel_regularizer=l2(0.01), bias_regularizer=l2(0.01)))
+            elif do_regularization == 'L1':
+                cnn.add(Dense(activation = 'relu', units = 128,kernel_regularizer=l2(0.01), bias_regularizer=l1(0.01)))
+            else:
+                # Fully Connected Layers
+                cnn.add(Dense(activation = 'relu', units = 128))
+
             cnn.add(Dense(activation = 'sigmoid', units = 2))
 
             # Compile the Neural network
